@@ -15,12 +15,32 @@ class MealViewController: UIViewController, UITextFieldDelegate,
     @IBOutlet weak var mealName: UITextField!
     @IBOutlet weak var mealPhoto: UIImageView!
     @IBOutlet weak var ratingControl: RatingControl!
+    @IBOutlet weak var saveButton: UIBarButtonItem!
+    
+    var meal: Meal?
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         // Handle the text field’s user input through delegate callbacks.
         mealName.delegate = self
+        
+        // Enable the Save button only if the text field has a valid Meal name.
+        checkValidMealName()
+    }
+    
+    // MARK: Navigation
+    @IBAction func cancel(sender: UIBarButtonItem) {
+    }
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if sender === saveButton {
+            let name = mealName.text ?? ""
+            let photo = mealPhoto.image
+            let rating = ratingControl.rating
+            
+            meal = Meal(name: name, photo: photo, rating: rating)
+        }
     }
     
     // MARK: Actions    
@@ -48,6 +68,12 @@ class MealViewController: UIViewController, UITextFieldDelegate,
     }
     
     func textFieldDidEndEditing(textField: UITextField) {
+        checkValidMealName()
+        navigationItem.title = mealName.text
+    }
+    
+    func textFieldDidBeginEditing(textField: UITextField) {
+        saveButton.enabled = false
     }
     
     // MARK: UIImagePickerControllerDelegate
@@ -60,6 +86,12 @@ class MealViewController: UIViewController, UITextFieldDelegate,
         mealPhoto.image = selectedImage
         
         picker.dismissViewControllerAnimated(true, completion: nil)
+    }
+    
+    func checkValidMealName() {
+        // Disable the Save button if the text field is empty.
+        let text = mealName.text ?? ""
+        saveButton.enabled = !text.isEmpty
     }
 }
 
