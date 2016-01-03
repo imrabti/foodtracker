@@ -8,8 +8,7 @@
 
 import UIKit
 
-class MealViewController: UIViewController, UITextFieldDelegate,
-    UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class MealViewController: UIViewController, UITextFieldDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     // MARK: Properties
     @IBOutlet weak var mealName: UITextField!
@@ -25,12 +24,27 @@ class MealViewController: UIViewController, UITextFieldDelegate,
         // Handle the text field’s user input through delegate callbacks.
         mealName.delegate = self
         
+        // Set up views if editing an existing Meal.
+        if let meal = meal {
+            navigationItem.title = meal.name
+            mealName.text = meal.name
+            mealPhoto.image = meal.photo
+            ratingControl.rating = meal.rating
+        }
+        
         // Enable the Save button only if the text field has a valid Meal name.
         checkValidMealName()
     }
     
     // MARK: Navigation
     @IBAction func cancel(sender: UIBarButtonItem) {
+        let isPresentingInAddMode = presentingViewController is UINavigationController
+        
+        if  isPresentingInAddMode {
+            dismissViewControllerAnimated(true, completion: nil)
+        } else {
+            navigationController!.popViewControllerAnimated(true)
+        }
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
